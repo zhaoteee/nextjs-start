@@ -1,18 +1,15 @@
 import type { NextPage } from 'next'
 // import type { GetStaticProps } from 'next'
-import { useState } from 'react'
 import Head from 'next/head'
 import Layout from 'components/layout'
-
+import { useContext } from 'react'
 import styles from 'styles/Home.module.less'
-import { Card } from 'antd';
+import { Card, Modal } from 'antd';
 
 
 export type infoType = { distributorName: string }
 
-const Home: NextPage<{ info: infoType }> = ({ info }) => {
-  const [isShowLogin, setIsShowLogin] = useState(false)
-  
+const Home: NextPage = (v) => {
   return (
     <Layout>
         <div>
