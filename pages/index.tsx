@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 // import type { GetStaticProps } from 'next'
-
+import { useState } from 'react'
 import Head from 'next/head'
 import Layout from 'components/layout'
 
@@ -11,7 +11,8 @@ import { Card } from 'antd';
 export type infoType = { distributorName: string }
 
 const Home: NextPage<{ info: infoType }> = ({ info }) => {
-  console.log(info)
+  const [isShowLogin, setIsShowLogin] = useState(false)
+  
   return (
     <Layout>
         <div>
