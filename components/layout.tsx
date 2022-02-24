@@ -1,9 +1,10 @@
 import type { NextPage } from 'next'
+import Link from 'next/link'
 
 import styles from 'styles/Layout.module.less'
 import Image from 'next/image'
 import { useContext } from 'react'
-import { Layout, Menu, Modal } from 'antd';
+import { Layout, Menu } from 'antd';
 import Login from './login'
 import Register from './register'
 import { StoreContext } from 'pages/_app'
@@ -11,7 +12,7 @@ const { Header, Content, Footer } = Layout;
 
 
 const LayoutComp: NextPage = ({ children }) => {
-  const navList = [{ name: '首页', link: '' },{ name: '响应式', link: '' },{ name: '整站', link: '' },{ name: '后台', link: '' }]
+  const navList = [{ name: '首页', link: '/' },{ name: '响应式', link: '/as' },{ name: '整站', link: '/asee' },{ name: '后台', link: '/dd' }]
   const { state, dispatch } = useContext(StoreContext)
   const loginClick = () => {
     dispatch({ type: 'TOGGLE_LOGIN', data: !state.isShowLoginModal })
@@ -28,10 +29,10 @@ const LayoutComp: NextPage = ({ children }) => {
             alt='logo' width={50} height={50}
           />
         </div>
-        <Menu theme="dark" mode="horizontal" className={styles.myMenu} defaultSelectedKeys={['2']}>
+        <Menu theme="dark" mode="horizontal" className={styles.myMenu} defaultSelectedKeys={['1']}>
           {navList.map((item, index) => {
             const key = index + 1;
-            return <Menu.Item key={key}>{item.name}</Menu.Item>;
+            return item.link ? <Menu.Item key={key}><Link href={item.link}>{item.name}</Link></Menu.Item> : <Menu.Item key={key}>{item.name}</Menu.Item>;
           })}
           <Menu.Item onClick={loginClick} className={styles.fr}>登录</Menu.Item>
           <Menu.Item onClick={registerClick} className={styles.fr}>注册</Menu.Item>

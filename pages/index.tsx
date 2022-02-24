@@ -2,17 +2,21 @@ import type { NextPage } from 'next'
 // import type { GetStaticProps } from 'next'
 import Head from 'next/head'
 import Layout from 'components/layout'
-import { useContext } from 'react'
+import { useState } from 'react'
 import styles from 'styles/Home.module.less'
-import { Card, Modal } from 'antd';
-
+import { Card, Input } from 'antd';
+const { Search } = Input;
 
 export type infoType = { distributorName: string }
 
 const Home: NextPage = (v) => {
+  const [loading, setLoading] = useState(false)
   return (
     <Layout>
         <div>
+          <div className={styles.searchArea}>
+            <Search placeholder="搜索词: 支付 模板 商城 帝国cms" enterButton="搜索" size="large" loading={loading} />
+          </div>
           <Card className={styles.cate}>
             <div className={styles.row}>
               <div className={styles.name}>分类:</div>
