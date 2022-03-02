@@ -1,10 +1,14 @@
 import type { NextPage } from 'next'
 import type { StoreContextType } from 'pages/_app'
 import { StoreContext } from 'pages/_app'
-import { useState, useContext } from 'react'
-import { Modal, Form, Input, Button, Checkbox } from 'antd';
+import { useContext } from 'react'
+import { Modal, Form, Input } from 'antd'
+import { postAxios } from 'util/axios'
+import { useCookies } from "react-cookie"
 
 const Login: NextPage = ({ children }) => {
+  const [form] = Form.useForm();
+  const [cookies, setCookie] = useCookies<string, any>()
   const { state, dispatch } = useContext<StoreContextType>(StoreContext)
   const handleCancel = () => {
     dispatch({ type: 'TOGGLE_LOGIN', data: !state.isShowLoginModal })
@@ -13,28 +17,39 @@ const Login: NextPage = ({ children }) => {
     dispatch({ type: 'TOGGLE_LOGIN', data: false })
     dispatch({ type: 'TOGGLE_REGISTER', data: true })
   }
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-  };
-  
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
+  const handleConfirm = async () => {
+    const values = await form.validateFields()
+    postAxios('/api/login', values).then((res: any) => {
+      if (res.msg === 'success') {
+        setCookie("isLoigin", 'true', { path: "/", maxAge: res.expire, sameSite: true })
+        setCookie("token", res.token, { path: "/", maxAge: res.expire, sameSite: true })
+        // 保存登录数据
+        dispatch({ type: 'TOGGLE_LOGINACOUNT', data: { isLogin: true, token: res.token } })
+        // 关闭弹窗
+        dispatch({ type: 'TOGGLE_LOGIN', data: !state.isShowLoginModal })
+      } else {
+        Modal.error({
+            title: '请求出错',
+            okText: '确定',
+            content: res.msg,
+        });
+      }
+    })
+  }
   return (
-    <Modal title="登录" cancelText='取消' okText='登录' visible={state.isShowLoginModal} onOk={handleCancel} onCancel={handleCancel}>
+    <Modal title="登录" cancelText='取消' okText='登录' visible={state.isShowLoginModal} onOk={handleConfirm} onCancel={handleCancel}>
         <Form
           name="basic"
+          form={form}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 18 }}
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
+          initialValues={{ remember: false }}
           autoComplete="off"
         >
           <Form.Item
             label="账号"
             name="username"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            rules={[{ required: true, message: '请输入用户名' }]}
           >
             <Input />
           </Form.Item>
@@ -42,7 +57,7 @@ const Login: NextPage = ({ children }) => {
           <Form.Item
             label="密码"
             name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            rules={[{ required: true, message: '请输入密码' }]}
           >
             <Input.Password />
           </Form.Item>

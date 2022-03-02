@@ -1,34 +1,49 @@
 import type { NextPage } from 'next'
 import type { StoreContextType } from 'pages/_app'
 import { StoreContext } from 'pages/_app'
-import { useState, useContext } from 'react'
-import { Modal, Form, Input, Button, Checkbox } from 'antd';
+import { useContext } from 'react'
+import { postAxios } from 'util/axios'
+import { useCookies } from "react-cookie"
+import { Modal, Form, Input, Button, Checkbox } from 'antd'
 
 const Register: NextPage = ({ children }) => {
+  const [form] = Form.useForm();
   const { state, dispatch } = useContext<StoreContextType>(StoreContext)
+  const [cookies, setCookie] = useCookies<string, any>()
   const handleCancel = () => {
     dispatch({ type: 'TOGGLE_REGISTER', data: !state.isShowRegisterModal })
-  };
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
   };
   const toLogin = () => {
     dispatch({ type: 'TOGGLE_REGISTER', data: false })
     dispatch({ type: 'TOGGLE_LOGIN', data: true })
   }
-  console.log(state.isShowRegisterModal)
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
+  const handleConfirm = async () => {
+    const values = await form.validateFields()
+    postAxios('/api/register', values).then((res: any) => {
+      if (res.msg === 'success') {
+        setCookie("isLoigin", 'true', { path: "/", maxAge: res.expire, sameSite: true })
+        setCookie("token", res.token, { path: "/", maxAge: res.expire, sameSite: true })
+        // 保存登录数据
+        dispatch({ type: 'TOGGLE_LOGINACOUNT', data: { isLogin: true, token: res.token } })
+        // 关闭弹窗
+        dispatch({ type: 'TOGGLE_REGISTER', data: !state.isShowRegisterModal })
+      } else {
+        Modal.error({
+            title: '请求出错',
+            okText: '确定',
+            content: res.msg,
+        });
+      }
+    })
+  }
   return (
-    <Modal title="注册账号" cancelText='取消' okText='确定注册' visible={state.isShowRegisterModal} onOk={handleCancel} onCancel={handleCancel}>
+    <Modal title="注册账号" cancelText='取消' okText='确定注册' visible={state.isShowRegisterModal} onOk={handleConfirm} onCancel={handleCancel}>
         <Form
           name="basic"
+          form={form}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 18 }}
           initialValues={{ remember: true }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item

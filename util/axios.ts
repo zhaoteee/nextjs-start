@@ -1,10 +1,14 @@
 import axios from 'axios'
-export const baseHost = 'http://z.gc.chaomeifan.com/api'
+import { Modal } from 'antd'
+import { isServer } from './utils'
+
+export const baseHost = 'https://***/'
+
 let baseURL: string
 if( process.env.NODE_ENV === 'production' ) {
-    baseURL = baseHost + '/guangcheng/'
+    baseURL = baseHost + '/'
 } else {
-    baseURL = baseHost + '/guangcheng/'
+    baseURL = baseHost + '/'
 }
 let service = axios.create({
     baseURL: baseURL,
@@ -12,40 +16,49 @@ let service = axios.create({
 });
 // 拦截器
 service.interceptors.response.use((response) => {
-    return response.data
+    let res = response.data
+    if ((res.code !== 0 || (res.msg && res.msg !== 'success'))) {
+        if (isServer) {
+            console.log(res.msg)
+        } else {
+            // Modal.error({
+            //     title: '请求出错',
+            //     okText: '确定',
+            //     content: res.msg,
+            // });
+            console.log(res)
+        }
+        console.log(res)
+    }
+    return res
 }, (error) => {
     return Promise.reject(error)
 })
 service.interceptors.request.use((config: any) => {
-    config.headers['Authorization'] = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMzA0ODg3Mjg1MSIsInRpbWUiOjE2NDU1Nzg2OTIwMzgsImlzcyI6InNlY3VyaXR5IiwiaWF0IjoxNjQ1NTc4NjkyLCJleHAiOjE2NDU2OTg2OTJ9.vNK2NLXVJe8pSq9Y3zXEU5OeewH8674WUq9T0lQIHpWkd1Puo5-RS5MQ5C6HBX0fjV2iEOJcDrT_nRV6M6FnzA'
     return config;
 }, (error) => {
     return Promise.reject(error)
 })
 
 // axios的get请求
-export function getAxios(url: string, params?: any) {
+export function getAxios(url: string, params?: any, headers?: any) {
     return new Promise((resolve, reject) => {
         service.get(url, {
             params,
+            ...headers
         }).then(res => {
-            resolve(res.data)
+            resolve(res)
         }).catch(err => {
-            console.log(err, '1')
             reject(err)
         })
     })
 }
 
 // axios的post请求
-export function postAxios(url: string, data?: any) {
+export function postAxios(url: string, data?: any, headers?: any) {
     return new Promise((resolve, reject) => {
-        service({
-            url,
-            method: 'post',
-            data
-        }).then(res => {
-            resolve(res.data)
+        service({ url, method: 'post', data, headers }).then(res => {
+            resolve(res)
         }).catch(err => {
             reject(err)
         })

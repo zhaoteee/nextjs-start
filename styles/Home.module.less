@@ -1,8 +1,26 @@
 .site-layout-content {
-  height: 500px;
+  min-height: 500px;
   padding: 24px;
   background: #fff;
   margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  .item {
+    width: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    p {
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    img {
+      cursor: pointer;
+    }
+    img:hover {
+      transform: scale(1.2);
+      transition: transform .3s ease-in-out;
+    }
+  }
 }
 .cate {
   margin-top: 16px;
@@ -16,6 +34,10 @@
     }
     .ks {
       flex: 1;
+      height: 76px;
+      overflow: hidden;
+      position: relative;
+      padding-right: 20px;
       span {
         cursor: pointer;
         margin-right: 16px;
@@ -26,7 +48,24 @@
           text-decoration: underline;
         }
       }
+      .more {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-size: 12px;
+        color: #f74a49;
+      }
     }
+    .moreks {
+      height: unset;
+      overflow: unset;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .ant-card-body {
+    padding-bottom: 0;
   }
 }
 .searchArea {

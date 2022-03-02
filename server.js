@@ -4,7 +4,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware')
 
 const devProxy = {
     '/api': {
-        target: 'http://z.gc.chaomeifan.com/api', // 端口自己配置合适的
+        target: 'https://***/api', // 端口自己配置合适的
         pathRewrite: {
             '^/api': ''
         },
@@ -27,11 +27,9 @@ app.prepare()
                 server.use(createProxyMiddleware(context, devProxy[context]))
             })
         }
-
         server.all('*', (req, res) => {
             handle(req, res)
         })
-
         server.listen(port, err => {
             if (err) {
                 throw err

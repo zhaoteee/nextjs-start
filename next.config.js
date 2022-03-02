@@ -15,6 +15,8 @@ module.exports = withAntdLess({
     webpack5: true,
   },
   images: {
-    domains: ['cdn.jsdelivr.net'],
+    domains: ['cdn.jsdelivr.net', 'www.downdemo.com'],
+    loader: 'imgix',
+    path: '',
   }
 });
